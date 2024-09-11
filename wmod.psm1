@@ -20,8 +20,11 @@ function Wmod-Load {
     )
 
     $modulePath = Get-ModulePath $moduleName $version
-
-    if (Test-Path $modulePath) {
+    if ($script:Wmod_Loaded.Contains($modulePath)) {
+        Write-Host 'Warning: The module is already loaded.'
+    }
+    elseif (Test-Path $modulePath) {
+# main logic ==================================================================
         . $modulePath
 
         # modify $env:PATH
@@ -29,9 +32,10 @@ function Wmod-Load {
 
         $script:Wmod_Loaded += $modulePath
         Write-Host "$modulePath module loaded."
+# =============================================================================
     }
     else {
-        Write-Host "$modulePath module not found."
+        Write-Host "Error: The module file is not found at $modulePath"
     }
 }
 
@@ -44,6 +48,7 @@ function Wmod-Unload {
     $modulePath = Get-ModulePath $moduleName $version
     if ($script:Wmod_Loaded.Contains($modulePath)) {
         if (Test-Path $modulePath) {
+# main logic ==================================================================
             . $modulePath
 
             # modify $env:PATH
@@ -51,9 +56,10 @@ function Wmod-Unload {
 
             $script:Wmod_Loaded = $script:Wmod_Loaded | Where-Object { $_ -ne $modulePath }
             Write-Host "The module unloaded successfully."
+# =============================================================================
         }
         else {
-            Write-Host "Error: The module file not found at $modulePath"
+            Write-Host "Error: The module file is not found at $modulePath"
         }
     }
     else {
