@@ -1,1 +1,1 @@
-$Path = 'C:\Program Files\LLVM\bin;'
+$Path = 'C:\Program Files\LLVM\18\bin;'
