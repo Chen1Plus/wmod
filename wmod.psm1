@@ -74,5 +74,5 @@ function Get-ModulePath {
         [string]$moduleName,
         [string]$version
     )
-    return "$Wmod_ModulePath\$moduleName\$version.ps1"
+    return (Get-Item "$Wmod_ModulePath\$moduleName").GetFiles("$version.ps1")
 }
