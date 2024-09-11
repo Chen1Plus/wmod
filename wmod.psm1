@@ -19,11 +19,14 @@ function Wmod-Load {
         [string]$version
     )
 
-    $modulePath = "$Wmod_ModulePath\$moduleName\$version.ps1"
+    $modulePath = Get-ModulePath $moduleName $version
 
     if (Test-Path $modulePath) {
         . $modulePath
+
+        # modify $env:PATH
         $env:PATH = $Path + $env:PATH
+
         $script:Wmod_Loaded += $modulePath
         Write-Host "$modulePath module loaded."
     }
@@ -38,17 +41,24 @@ function Wmod-Unload {
         [string]$version
     )
 
-    $modulePath = "$Wmod_ModulePath\$moduleName\$version.ps1"
+    $modulePath = Get-ModulePath $moduleName $version
+    if ($script:Wmod_Loaded.Contains($modulePath)) {
+        if (Test-Path $modulePath) {
+            . $modulePath
 
-    if (Test-Path $modulePath) {
-        . $modulePath
-        $env:PATH = $env:PATH.Replace($Path, '')
-        $script:Wmod_Loaded = $script:Wmod_Loaded | Where-Object { $_ -ne $modulePath }
-        Write-Host "$modulePath module unloaded."
+            # modify $env:PATH
+            $env:PATH = $env:PATH.Replace($Path, '')
+
+            $script:Wmod_Loaded = $script:Wmod_Loaded | Where-Object { $_ -ne $modulePath }
+            Write-Host "The module unloaded successfully."
+        }
+        else {
+            Write-Host "Error: The module file not found at $modulePath"
+        }
     }
     else {
-        Write-Host "$modulePath module not found."
-    }
+        Write-Host 'Error: The module is not loaded.'
+    }    
 }
 
 function Wmod-List {
@@ -56,4 +66,13 @@ function Wmod-List {
     $script:Wmod_Loaded | ForEach-Object {
         Write-Host $_
     }
+}
+
+# Utilities
+function Get-ModulePath {
+    param (
+        [string]$moduleName,
+        [string]$version
+    )
+    return "$Wmod_ModulePath\$moduleName\$version.ps1"
 }
