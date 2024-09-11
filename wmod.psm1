@@ -55,6 +55,10 @@ function Wmod-Unload {
             $env:PATH = $env:PATH.Replace($Path, '')
 
             $script:Wmod_Loaded = $script:Wmod_Loaded | Where-Object { $_ -ne $modulePath }
+            if (-not $script:Wmod_Loaded) {
+                $script:Wmod_Loaded = @()
+            }
+            
             Write-Host "The module unloaded successfully."
 # =============================================================================
         }
