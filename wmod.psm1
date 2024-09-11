@@ -3,7 +3,11 @@ $Wmod_ModulePath = "$Wmod_Path\ModuleFiles"
 
 function Wmod-Avail {
     Get-ChildItem $Wmod_ModulePath -Directory | ForEach-Object {
-        $_.Name
+        $name = $_.Name
+        Get-ChildItem $_.FullName -Filter '*.ps1' | ForEach-Object {
+            $version = $_.BaseName
+            Write-Host "$name/$version"
+        }
     }
 }
 
