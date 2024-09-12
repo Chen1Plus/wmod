@@ -49,42 +49,45 @@ function Wmod-Unload {
         [string]$moduleName,
         [string]$version
     )
-
-    $modulePath = Get-ModulePath $moduleName $version
-    if ($script:Wmod_Loaded.Contains($modulePath)) {
-        if (Test-Path $modulePath) {
-# main logic ==================================================================
-            . $modulePath
-
-            # modify $env:PATH
-            $env:PATH = $env:PATH.Replace($Path, '')
-
-            # remove environment variables
-            $EnvVars.Keys | ForEach-Object {
-                Remove-Item -Path "Env:\$_"
-            }
-
-            $script:Wmod_Loaded = $script:Wmod_Loaded | Where-Object { $_ -ne $modulePath }
-            if (-not $script:Wmod_Loaded) {
-                $script:Wmod_Loaded = @()
-            }
-            
-            Write-Host "The module unloaded successfully."
-# =============================================================================
-        }
-        else {
-            Write-Host "Error: The module file is not found at $modulePath"
-        }
-    }
-    else {
-        Write-Host 'Error: The module is not loaded.'
-    }    
+    Unload-ByPath (Get-ModulePath $moduleName $version)
 }
 
 function Wmod-List {
     Write-Host "Loaded modules:"
     $script:Wmod_Loaded | ForEach-Object {
         Write-Host $_
+    }
+}
+
+# Private
+function Unload-ByPath {
+    param (
+        [string]$modulePath
+    )
+    
+    if (-not $script:Wmod_Loaded.Contains($modulePath)) {
+        Write-Host 'Error: The module is not loaded.'
+    }
+    elseif (-not (Test-Path $modulePath)) {
+        Write-Host "Error: The module file is not found at $modulePath"
+    }
+    else {
+        . $modulePath
+
+        # modify $env:PATH
+        $env:PATH = $env:PATH.Replace($Path, '')
+
+        # remove environment variables
+        $EnvVars.Keys | ForEach-Object {
+            Remove-Item -Path "Env:\$_"
+        }
+
+        $script:Wmod_Loaded = $script:Wmod_Loaded | Where-Object { $_ -ne $modulePath }
+        if (-not $script:Wmod_Loaded) {
+            $script:Wmod_Loaded = @()
+        }
+
+        Write-Host "The module unloaded successfully."
     }
 }
 
