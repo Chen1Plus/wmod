@@ -50,6 +50,12 @@ function Wmod-Unload {
     Unload-ByPath (Get-ModulePath $moduleName $version)
 }
 
+function Wmod-Purge {
+    $script:Wmod_Loaded | ForEach-Object {
+        Unload-ByPath $_
+    }
+}
+
 function Wmod-List {
     Write-Host "Loaded modules:"
     $script:Wmod_Loaded | ForEach-Object {
