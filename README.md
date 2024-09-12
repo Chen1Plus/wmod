@@ -17,6 +17,9 @@ Wmod-Avail
 Wmod-Load $moduleName $version
 Wmod-Unload $moduleName $version
 
+# Unload all modules
+Wmod-Purge
+
 # List loaded modules
 Wmod-List
 ```
