@@ -27,6 +27,9 @@ This is an example. I have LLVM 18 installed at `C:\Program Files\LLVM`.
 
 ```powershell
 $Path = 'C:\Program Files\LLVM\bin;'
+$EnvVars = @{
+    'LLVM_HOME' = 'C:\Program Files\LLVM'
+}
 ```
 
 You should place the file at `<Install Location>\ModuleFiles\<moduleName>\<version>.ps1`.
