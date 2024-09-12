@@ -30,6 +30,11 @@ function Wmod-Load {
         # modify $env:PATH
         $env:PATH = $Path + $env:PATH
 
+        # add environment variables
+        $EnvVars.Keys | ForEach-Object {
+            New-Item -Path "Env:\$_" -Value $EnvVars[$_]
+        }
+
         $script:Wmod_Loaded += $modulePath
         Write-Host "$modulePath module loaded."
 # =============================================================================
@@ -53,6 +58,11 @@ function Wmod-Unload {
 
             # modify $env:PATH
             $env:PATH = $env:PATH.Replace($Path, '')
+
+            # remove environment variables
+            $EnvVars.Keys | ForEach-Object {
+                Remove-Item -Path "Env:\$_"
+            }
 
             $script:Wmod_Loaded = $script:Wmod_Loaded | Where-Object { $_ -ne $modulePath }
             if (-not $script:Wmod_Loaded) {
