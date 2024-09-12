@@ -23,8 +23,10 @@ function Wmod-Load {
     if ($script:Wmod_Loaded.Contains($modulePath)) {
         Write-Host 'Warning: The module is already loaded.'
     }
-    elseif (Test-Path $modulePath) {
-# main logic ==================================================================
+    elseif (-not (Test-Path $Wmod_ModulePath)) {
+        Write-Host "Error: The module file is not found at $modulePath"
+    }
+    else {
         . $modulePath
 
         # modify $env:PATH
@@ -37,10 +39,6 @@ function Wmod-Load {
 
         $script:Wmod_Loaded += $modulePath
         Write-Host "$modulePath module loaded."
-# =============================================================================
-    }
-    else {
-        Write-Host "Error: The module file is not found at $modulePath"
     }
 }
 
